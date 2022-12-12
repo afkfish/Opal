@@ -1,7 +1,9 @@
 package com.afkfish;
 
+import com.afkfish.audio.TrackScheduler;
 import com.afkfish.commands.Command;
 import com.afkfish.commands.PlayCommand;
+import com.afkfish.commands.SkipCommand;
 import com.afkfish.commands.StopCommand;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -44,14 +46,19 @@ public class Opal {
 
 		SlashCommand.with("p", "play",
 						Collections.singletonList(SlashCommandOption.createStringOption("query", "The song to play", true)))
-				.createForServer(api, testServerId)
+				.createGlobal(api)
 				.join();
 		commands.put("p", new PlayCommand());
 
 		SlashCommand.with("stop", "stop")
-				.createForServer(api, testServerId)
+				.createGlobal(api)
 				.join();
 		commands.put("stop", new StopCommand());
+
+		SlashCommand.with("skip", "skip")
+				.createGlobal(api)
+				.join();
+		commands.put("skip", new SkipCommand());
 
 		api.addInteractionCreateListener(event -> {
 			Optional<SlashCommandInteraction> interaction = event.getSlashCommandInteraction();

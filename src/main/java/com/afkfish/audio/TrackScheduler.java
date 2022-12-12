@@ -1,4 +1,4 @@
-package com.afkfish;
+package com.afkfish.audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import static com.afkfish.Opal.players;
 
 public class TrackScheduler extends AudioEventAdapter {
-	final ArrayList<AudioTrack> queue = new ArrayList<>();
+	public final ArrayList<AudioTrack> queue = new ArrayList<>();
 	public TrackScheduler(AudioPlayer player) {
 		player.addListener(this);
 	}

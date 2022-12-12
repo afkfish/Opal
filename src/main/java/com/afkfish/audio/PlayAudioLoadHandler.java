@@ -1,4 +1,4 @@
-package com.afkfish;
+package com.afkfish.audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -28,12 +28,10 @@ public class PlayAudioLoadHandler implements AudioLoadResultHandler {
 		//then add the track to the scheduler
 		if (schedulers.containsKey(serverId)) {
 			DEFAULT_LOGGER.info("Scheduler exists for server " + serverId);
-			schedulers.get(serverId).queue.add(track);
 		} else {
 			DEFAULT_LOGGER.info("Scheduler does not exist for server " + serverId);
 			TrackScheduler scheduler = new TrackScheduler(players.get(serverId));
 			schedulers.put(serverId, scheduler);
-			scheduler.queue.add(track);
 		}
 
 		// if a song is already playing, the track will be queued
@@ -44,6 +42,7 @@ public class PlayAudioLoadHandler implements AudioLoadResultHandler {
 		} else {
 			DEFAULT_LOGGER.info("Queued track: " + track.getInfo().title + " because something was playing");
 			response.thenAccept(originalInteraction -> originalInteraction.setContent("Queued " + track.getInfo().title).update());
+			schedulers.get(serverId).queue.add(track);
 		}
 	}
 

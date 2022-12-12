@@ -19,6 +19,6 @@ public class StopCommand implements Command{
 			players.get(server.get().getId()).stopTrack();
 		}
 
-		response.thenAccept(originalInteraction -> originalInteraction.setContent("Stopped").update());
+		response.thenAccept(updater -> updater.setContent("Stopped").update());
 	}
 }

@@ -1,7 +1,7 @@
 package com.afkfish.commands;
 
-import com.afkfish.LavaplayerAudioSource;
-import com.afkfish.PlayAudioLoadHandler;
+import com.afkfish.audio.LavaplayerAudioSource;
+import com.afkfish.audio.PlayAudioLoadHandler;
 import org.javacord.api.audio.AudioSource;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
 import org.javacord.api.entity.server.Server;
@@ -17,7 +17,7 @@ import static com.afkfish.Opal.players;
 public class PlayCommand implements Command{
 	@Override
 	public void execute(Interaction interaction) {
-		CompletableFuture<InteractionOriginalResponseUpdater> response = interaction.respondLater(true);
+		CompletableFuture<InteractionOriginalResponseUpdater> response = interaction.respondLater();
 		Optional<Server> server = interaction.getServer();
 		Optional<ServerVoiceChannel> channel;
 
@@ -28,7 +28,7 @@ public class PlayCommand implements Command{
 
 		channel = interaction.getUser().getConnectedVoiceChannel(server.get());
 		if (channel.isEmpty()) {
-			response.thenAccept(originalInteraction -> originalInteraction.setContent("You are not in a voice channel!").update());
+			response.thenAccept(updater -> updater.setContent("You are not in a voice channel!").update());
 			return;
 		}
 
