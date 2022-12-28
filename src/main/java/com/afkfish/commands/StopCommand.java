@@ -12,13 +12,13 @@ import static com.afkfish.Opal.players;
 public class StopCommand implements Command{
 	@Override
 	public void execute(Interaction interaction) {
-		CompletableFuture<InteractionOriginalResponseUpdater> response = interaction.respondLater(true);
+		CompletableFuture<InteractionOriginalResponseUpdater> response = interaction.respondLater();
 
 		Optional<Server> server;
 		if ((server = interaction.getServer()).isPresent()) {
 			players.get(server.get().getId()).stopTrack();
 		}
 
-		response.thenAccept(updater -> updater.setContent("Stopped").update());
+		response.thenAccept(updater -> updater.setContent("Stopped playing!").update());
 	}
 }

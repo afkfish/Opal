@@ -44,8 +44,13 @@ public class PlayCommand implements Command{
 					.thenAccept(audioConnection -> audioConnection.setAudioSource(source));
 		}
 
-		String url = interaction.asSlashCommandInteraction().get().getArgumentByName("query").get().getStringValue().get();
+		String query = interaction.asSlashCommandInteraction().get().getArgumentByName("query").get().getStringValue().get();
 
-		playerManager.loadItem(url, new PlayAudioLoadHandler(response, server.get().getId()));
+		// check if url strats with http or https, if not, search YouTube
+		final String urlMatch = "^(http|https)://.*$";
+		if (!query.matches(urlMatch)) {
+			query = "ytsearch:" + query;
+		}
+		playerManager.loadItem(query, new PlayAudioLoadHandler(response, server.get().getId()));
 	}
 }

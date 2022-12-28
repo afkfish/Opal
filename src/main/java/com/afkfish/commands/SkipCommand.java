@@ -36,6 +36,5 @@ public class SkipCommand implements Command{
 			players.get(server.get().getId()).stopTrack();
 			response.thenAccept(updater -> updater.setContent("Skipped").update());
 		}
-
 	}
 }
