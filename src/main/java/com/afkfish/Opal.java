@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.entity.intent.Intent;
 import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandOption;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class Opal {
-	private static final HashMap<String, Command> commands = new HashMap<>();
+	private static final HashMap<String, ServerCommand> serverCommads = new HashMap<>();
 	public static final HashMap<Long, AudioPlayer> players = new HashMap<>();
 	public static final HashMap<Long, TrackScheduler> schedulers = new HashMap<>();
 	private static final Logger LOGGER = LogManager.getLogger(Opal.class);
@@ -37,46 +38,51 @@ public class Opal {
 		DiscordApi api = new DiscordApiBuilder()
 				.setToken(token)
 				.setWaitForServersOnStartup(false)
-				.setAllIntents()
+				.addIntents(Intent.MESSAGE_CONTENT, Intent.GUILD_MEMBERS)
 				.login().join();
 
 		SlashCommand.with("p", "play",
 						Collections.singletonList(SlashCommandOption.createStringOption("query", "The song to play", true)))
 				.createGlobal(api)
 				.join();
-		commands.put("p", new PlayCommand());
+		serverCommads.put("p", new PlayCommand());
 
 		SlashCommand.with("play", "play",
 						Collections.singletonList(SlashCommandOption.createStringOption("query", "The song to play", true)))
 				.createGlobal(api)
 				.join();
-		commands.put("play", new PlayCommand());
+		serverCommads.put("play", new PlayCommand());
+
+		SlashCommand.with("pause", "pause")
+				.createGlobal(api)
+				.join();
+		serverCommads.put("pause", new PauseCommand());
 
 		SlashCommand.with("stop", "stop")
 				.createGlobal(api)
 				.join();
-		commands.put("stop", new StopCommand());
+		serverCommads.put("stop", new StopCommand());
 
 		SlashCommand.with("skip", "skip")
 				.createGlobal(api)
 				.join();
-		commands.put("skip", new SkipCommand());
+		serverCommads.put("skip", new SkipCommand());
 
 		SlashCommand.with("queue", "queue")
 				.createGlobal(api)
 				.join();
-		commands.put("queue", new QueueCommand());
+		serverCommads.put("queue", new QueueCommand());
 
 		SlashCommand.with("clear", "clear the queue")
 				.createGlobal(api)
 				.join();
-		commands.put("clear", new ClearCommand());
+		serverCommads.put("clear", new ClearCommand());
 
 		api.addInteractionCreateListener(event -> {
 			Optional<SlashCommandInteraction> interaction = event.getSlashCommandInteraction();
 			interaction.ifPresent(slashCommandInteraction -> {
-						Command command = commands.get(slashCommandInteraction.getFullCommandName());
-						if (command != null) command.execute(event.getInteraction());
+						ServerCommand command = serverCommads.get(slashCommandInteraction.getFullCommandName());
+						if (command != null) command.validate(event.getInteraction());
 						else LOGGER.info("Invalid command was passed!" + slashCommandInteraction.getFullCommandName());
 					}
 			);
