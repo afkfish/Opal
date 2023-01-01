@@ -29,7 +29,7 @@ public abstract class ServerCommand {
             return;
         }
 
-        LOGGER.debug("Command {} called by {}", interaction.asSlashCommandInteraction().get().getCommandName(), interaction.getUser().getDiscriminatedName());
+        LOGGER.info("Command {} called by {}", interaction.asSlashCommandInteraction().get().getCommandName(), interaction.getUser().getDiscriminatedName());
         this.execute(interaction, response, server.get(), embed);
     }
 }

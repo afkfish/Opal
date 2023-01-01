@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.afkfish'
-version '0.1'
+version '0.2'
 
 repositories {
     mavenCentral()
@@ -15,5 +15,18 @@ repositories {
 dependencies {
     implementation 'org.javacord:javacord:3.7.0'
     implementation 'com.sedmelluq:lavaplayer:1.3.78'
+
+    implementation 'org.apache.logging.log4j:log4j-api:2.19.0'
     implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
+    implementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.18.0'
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes 'Main-Class': 'com.afkfish.Opal'
+    }
+    from {
+        configurations.compileClasspath.filter{ it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
