@@ -1,7 +1,7 @@
 FROM arm32v7/gradle:7.6-jdk19 AS builder
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
-RUN ls
+RUN chmod +x gradlew.bat
 RUN /home/gradle/src/gradlew.bat build
 
 FROM eclipse-temurin:19-jdk-jammy
