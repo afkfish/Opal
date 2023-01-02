@@ -5,6 +5,6 @@ RUN gradle build
 
 FROM eclipse-temurin:19-jdk-jammy
 RUN mkdir /app
-COPY --from=builder /home/gradle/src/build/libs/*.jar /app/Opal.jar
+COPY --from=builder /home/gradle/src/build/libs/*all.jar /app/Opal.jar
 
 ENTRYPOINT ["java","-jar","/app/Opal.jar"]
