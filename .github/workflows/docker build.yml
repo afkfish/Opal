@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: Docker image CI
 
 on:
   workflow_dispatch:
