@@ -1,6 +1,7 @@
 FROM gradle:7.6-jdk19 AS builder
 COPY --chown=gradle:gradle . /home/gradle/src
-RUN export GRADLE_HOME=/home/gradle/src
+RUN ls /opt/gradle
+RUN export GRADLE_HOME=/opt/gradle
 WORKDIR /home/gradle/src
 RUN gradle build
 
