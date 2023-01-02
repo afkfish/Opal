@@ -1,9 +1,8 @@
-FROM gradle:7.6-jdk19 AS builder
+FROM arm32v7/gradle:7.6-jdk19 AS builder
 COPY --chown=gradle:gradle . /home/gradle/src
-RUN ls /opt/gradle
-RUN export GRADLE_HOME=/opt/gradle
 WORKDIR /home/gradle/src
-RUN gradle build
+RUN ls
+RUN /home/gradle/src/gradlew.bat build
 
 FROM eclipse-temurin:19-jdk-jammy
 RUN mkdir /app
