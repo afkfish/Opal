@@ -33,7 +33,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
 	@Override
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-		if (endReason.mayStartNext) {
+		if (endReason.mayStartNext && !queue.isEmpty()) {
 			// Start next track
 			for (Long serverId : players.keySet()) {
 				if (players.get(serverId).equals(player)) {
