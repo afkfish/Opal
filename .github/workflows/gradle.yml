@@ -15,6 +15,7 @@ jobs:
       with:
         java-version: '18'
         distribution: 'temurin'
+        architecture: 'armv7'
     - name: Update the permissions for gradlew
       run: chmod +x ./gradlew
     - name: Validate Gradle wrapper
@@ -23,3 +24,7 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         arguments: build
+    - uses: actions/upload-artifact@v3
+      with:
+          name: Package
+          path: build/libs
