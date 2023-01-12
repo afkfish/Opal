@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.interaction.callback.InteractionOriginalResponseUpdater;
 
 import java.util.concurrent.CompletableFuture;
@@ -37,11 +38,17 @@ public class PlayAudioLoadHandler implements AudioLoadResultHandler {
 		// if a song is already playing, the track will be queued
 		if (players.get(serverId).getPlayingTrack() == null) {
 			LOGGER.info("Playing track: " + track.getInfo().title + " because nothing was playing");
-			response.thenAccept(originalInteraction -> originalInteraction.setContent("Playing " + track.getInfo().title).update());
+			EmbedBuilder embed = new EmbedBuilder()
+					.setTitle("Now Playing")
+					.setDescription(track.getInfo().title);
+			response.thenAccept(originalInteraction -> originalInteraction.addEmbed(embed).update());
 			players.get(serverId).playTrack(track);
 		} else {
 			LOGGER.info("Queued track: " + track.getInfo().title + " because something was playing");
-			response.thenAccept(originalInteraction -> originalInteraction.setContent("Queued " + track.getInfo().title).update());
+			EmbedBuilder embed = new EmbedBuilder()
+					.setTitle("Queued")
+					.setDescription(track.getInfo().title);
+			response.thenAccept(originalInteraction -> originalInteraction.addEmbed(embed).update());
 			schedulers.get(serverId).queue.add(track);
 		}
 	}
@@ -49,6 +56,7 @@ public class PlayAudioLoadHandler implements AudioLoadResultHandler {
 	@Override
 	public void playlistLoaded(AudioPlaylist playlist) {
 		//check if a track scheduler exists for the server, if not create one and add it to the map
+		EmbedBuilder embed = new EmbedBuilder();
 
 		TrackScheduler scheduler;
 		if (schedulers.containsKey(serverId)) {
@@ -65,18 +73,15 @@ public class PlayAudioLoadHandler implements AudioLoadResultHandler {
 		if (playlist.isSearchResult()) {
 			LOGGER.info("Search result, appending first to queue");
 			scheduler.queue.add(playlist.getTracks().get(0));
-			response.thenAccept(originalInteraction -> originalInteraction.setContent("Queued " + playlist.getTracks().get(0).getInfo().title).update());
 		} else {
 			if (playlist.getTracks().size() > 20) {
 				LOGGER.info("Playlist has more than 20 tracks, appending first 20 to queue");
-				response.thenAccept(originalInteraction -> originalInteraction.setContent("Playlist has more than 20 tracks, only the first 20 tracks were added!").update());
 				for (int i = 0; i < 20; i++) {
 					scheduler.queue.add(playlist.getTracks().get(i));
 				}
 			} else {
 				LOGGER.info("Appending all tracks to queue from playlist");
 				scheduler.queue.addAll(playlist.getTracks());
-				response.thenAccept(originalInteraction -> originalInteraction.setContent("Queued " + playlist.getTracks().size() + " tracks").update());
 			}
 		}
 
@@ -85,19 +90,32 @@ public class PlayAudioLoadHandler implements AudioLoadResultHandler {
 			LOGGER.info("Playing first track from playlist, because nothing was playing");
 			players.get(serverId).playTrack(playlist.getTracks().get(0));
 			schedulers.get(serverId).queue.remove(0);
+			embed.setTitle("Now Playing");
+			embed.setDescription(playlist.getTracks().get(0).getInfo().title);
 			response.thenAccept(originalInteraction -> originalInteraction.setContent("Playing " + playlist.getTracks().get(0).getInfo().title).update());
+			return;
 		}
+		embed.setTitle("Queued");
+		embed.setDescription("Added " + playlist.getTracks().size() + " track(s) to queue");
+		response.thenAccept(originalInteraction -> originalInteraction.addEmbed(embed).update());
 	}
 
 	@Override
 	public void noMatches() {
 		LOGGER.error("No matches found");
-		response.thenAccept(originalInteraction -> originalInteraction.setContent("No matches found").update());
+		EmbedBuilder embed = new EmbedBuilder()
+				.setTitle("No matches found")
+				.setDescription("No matches were found for the given query");
+		response.thenAccept(originalInteraction -> originalInteraction.addEmbed(embed).update());
 	}
 
 	@Override
 	public void loadFailed(FriendlyException throwable) {
 		// Notify the user that everything exploded
 		LOGGER.error("Load failed", throwable);
+		EmbedBuilder embed = new EmbedBuilder()
+				.setTitle("Load failed")
+				.setDescription("Something went wrong while loading the track");
+		response.thenAccept(originalInteraction -> originalInteraction.addEmbed(embed).update());
 	}
 }

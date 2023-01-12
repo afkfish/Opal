@@ -8,7 +8,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
 import java.util.ArrayList;
 
-import static com.afkfish.Opal.players;
+import static com.afkfish.Opal.LOGGER;
 
 public class TrackScheduler extends AudioEventAdapter {
 	public final ArrayList<AudioTrack> queue = new ArrayList<>();
@@ -35,13 +35,8 @@ public class TrackScheduler extends AudioEventAdapter {
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
 		if (endReason.mayStartNext && !queue.isEmpty()) {
 			// Start next track
-			for (Long serverId : players.keySet()) {
-				if (players.get(serverId).equals(player)) {
-					player.playTrack(queue.get(0));
-					queue.remove(0);
-					break;
-				}
-			}
+			player.playTrack(queue.get(0));
+			queue.remove(0);
 		}
 
 		// endReason == FINISHED: A track finished or died by an exception (mayStartNext = true).
@@ -55,11 +50,17 @@ public class TrackScheduler extends AudioEventAdapter {
 	@Override
 	public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
 		// An already playing track threw an exception (track end event will still be received separately)
+		LOGGER.warn("Track Exception: " + exception.getMessage());
 	}
 
 	@Override
 	public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
 		// Audio track has been unable to provide us any audio, might want to just start a new track
+		LOGGER.warn("Track Stuck: " + track.getInfo().title);
+		if (!queue.isEmpty()) {
+			player.playTrack(queue.get(0));
+			queue.remove(0);
+		}
 	}
 
 }
