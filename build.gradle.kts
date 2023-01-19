@@ -26,6 +26,7 @@ dependencies {
 
 tasks.jar {
     manifest {
-        attributes["MainClass"] = "com.afkfish.Opal"
+        // define main class attribute
+        attributes["Main-Class"] = "com.afkfish.Opal"
     }
 }
