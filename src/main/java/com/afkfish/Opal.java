@@ -11,7 +11,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.entity.channel.ServerVoiceChannel;
 import org.javacord.api.entity.intent.Intent;
+import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandOption;
@@ -19,6 +21,7 @@ import org.javacord.api.interaction.SlashCommandOption;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.Set;
 
 public class Opal {
 	private static final HashMap<String, ServerCommand> serverCommands = new HashMap<>();
@@ -42,6 +45,20 @@ public class Opal {
 				.login().join();
 
 		addCommands(api);
+
+		api.addServerVoiceChannelMemberLeaveListener(event -> {
+			ServerVoiceChannel channel = event.getChannel();
+			Set<User> users = channel.getConnectedUsers();
+
+			if (users.contains(api.getYourself()) && users.size() == 1) {
+				players.get(event.getServer().getId()).stopTrack();
+				players.remove(event.getServer().getId());
+				schedulers.remove(event.getServer().getId());
+
+				event.getChannel().disconnect();
+				LOGGER.info("Automatically disconnected from voice channel: " + event.getChannel().getName());
+			}
+		});
 
 		api.addInteractionCreateListener(event -> {
 			Optional<SlashCommandInteraction> interaction = event.getSlashCommandInteraction();

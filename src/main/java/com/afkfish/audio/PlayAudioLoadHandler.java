@@ -47,7 +47,8 @@ public class PlayAudioLoadHandler implements AudioLoadResultHandler {
 			LOGGER.info("Queued track: " + track.getInfo().title + " because something was playing");
 			EmbedBuilder embed = new EmbedBuilder()
 					.setTitle("Queued")
-					.setDescription(track.getInfo().title);
+					.setDescription(track.getInfo().title)
+					.setThumbnail(track.getInfo().artworkUrl);
 			response.thenAccept(originalInteraction -> originalInteraction.addEmbed(embed).update());
 			schedulers.get(serverId).queue.add(track);
 		}
@@ -92,11 +93,13 @@ public class PlayAudioLoadHandler implements AudioLoadResultHandler {
 			schedulers.get(serverId).queue.remove(0);
 			embed.setTitle("Now Playing");
 			embed.setDescription(playlist.getTracks().get(0).getInfo().title);
-			response.thenAccept(originalInteraction -> originalInteraction.setContent("Playing " + playlist.getTracks().get(0).getInfo().title).update());
+			embed.setThumbnail(playlist.getTracks().get(0).getInfo().artworkUrl);
+			response.thenAccept(originalInteraction -> originalInteraction.addEmbed(embed).update());
 			return;
 		}
 		embed.setTitle("Queued");
 		embed.setDescription("Added " + playlist.getTracks().size() + " track(s) to queue");
+		embed.setThumbnail(playlist.getTracks().get(0).getInfo().artworkUrl);
 		response.thenAccept(originalInteraction -> originalInteraction.addEmbed(embed).update());
 	}
 
