@@ -98,7 +98,7 @@ public class PlayAudioLoadHandler implements AudioLoadResultHandler {
 			return;
 		}
 		embed.setTitle("Queued");
-		embed.setDescription("Added " + playlist.getTracks().size() + " track(s) to queue");
+		embed.setDescription("Added " + (playlist.isSearchResult() ? playlist.getTracks().get(0).getInfo().title : playlist.getTracks().size() + " track(s) to queue"));
 		embed.setThumbnail(playlist.getTracks().get(0).getInfo().artworkUrl);
 		response.thenAccept(originalInteraction -> originalInteraction.addEmbed(embed).update());
 	}

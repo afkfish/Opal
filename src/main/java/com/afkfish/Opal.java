@@ -114,6 +114,11 @@ public class Opal {
 				.join();
 		serverCommands.put("leave", new LeaveCommand());
 
+		SlashCommand.with("np", "now playing")
+				.createGlobal(api)
+				.join();
+		serverCommands.put("np", new NpCommand());
+
 		LOGGER.info("Commands added!");
 	}
 }

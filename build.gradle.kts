@@ -8,16 +8,12 @@ version = "0.3"
 
 repositories {
     mavenCentral()
-    maven { setUrl("https://jitpack.io") }
+    maven(url = "https://jitpack.io")
 }
 
 dependencies {
     implementation("org.javacord:javacord:3.7.0")
-    implementation("com.github.Walkyst.lavaplayer-fork:lava-common:custom-SNAPSHOT")
-    implementation("com.github.Walkyst.lavaplayer-fork:lavaplayer:custom-SNAPSHOT")
-    runtimeOnly("com.github.Walkyst.lavaplayer-fork:lavaplayer-ext-format-xm:custom-SNAPSHOT")
-    runtimeOnly("com.github.Walkyst.lavaplayer-fork:lavaplayer-ext-youtube-rotator:custom-SNAPSHOT")
-    runtimeOnly("com.github.Walkyst.lavaplayer-fork:lavaplayer-stream-merger:custom-SNAPSHOT")
+    implementation("com.github.Walkyst.lavaplayer-fork:lavaplayer:e833a69a10")
 
     implementation("org.apache.logging.log4j:log4j-api:2.19.0")
     implementation("org.apache.logging.log4j:log4j-core:2.19.0")
@@ -29,4 +25,9 @@ tasks.jar {
         // define main class attribute
         attributes["Main-Class"] = "com.afkfish.Opal"
     }
+}
+
+// set build encoding
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
 }
